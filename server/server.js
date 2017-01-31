@@ -1,7 +1,6 @@
 /**
  * Created by KC on 28/01/2017.
  */
-
 var express = require('express');
 var bodyParser = require('body-parser');
 
@@ -25,6 +24,19 @@ app.post('/todos', (req, res) => {
     });
 });
 
+app.get('/todos', (req, res) => {
+
+    Todo.find().then((todos) => {
+        // 因為執行find回傳的結果是陣列型態，所以在res.send回傳結果到瀏覽器時，要用物件{}包裝起來
+        // 才會判斷成正確的JSON物件
+        res.send({todos});
+    },(e) => {
+        res.status(400).send(e);
+    })
+});
+
 app.listen(3000, () => {
     console.log('Stared on port 3000');
 });
+
+module.exports = {app};
