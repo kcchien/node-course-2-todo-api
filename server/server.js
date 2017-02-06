@@ -103,11 +103,9 @@ app.patch('/todos/:id', (req, res) => {
     }
 
     // 如果有completed這個屬性，而且是布林型態
-    if(_.isBoolean(body.completed) && body.completed)
-    {
+    if(_.isBoolean(body.completed) && body.completed) {
         // Unix Epoch timestamp
-        body.completeAt = new Date().getTime();
-
+        body.completedAt = new Date().getTime();
     } else {
         body.completed = false;
         body.completedAt = null;
