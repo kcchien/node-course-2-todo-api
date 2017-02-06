@@ -3,12 +3,15 @@
  */
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
+
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -38,8 +41,28 @@ app.get('/todos', (req, res) => {
     })
 });
 
-app.listen(3000, () => {
-    console.log('Stared on port 3000');
+// GET /todos by id route
+app.get('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    // Valid Id using isValid
+    /* 判斷Id是否正確 */
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    /* Return Object */
+    Todo.findById(id).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+        res.send({todo});
+
+    }).catch((e) => res.status(400).send());
+});
+
+app.listen(port, () => {
+    console.log(`Stared on port ${port}`);
 });
 
 module.exports = {app};
