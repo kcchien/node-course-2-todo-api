@@ -1,5 +1,5 @@
 /**
- * Created by KC on 29/01/2017.
+ * Created by KC on 29/01/2017
  */
 let mongoose = require('mongoose');
 let mongodbServer = process.env.MONGODB_URI ||'mongodb://localhost:27017/TodoApp';
