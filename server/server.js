@@ -1,13 +1,15 @@
 /**
  * Created by KC on 28/01/2017.
  */
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID} = require('mongodb');
 
-var {mongoose} = require('./db/mongoose');
-var {Todo} = require('./models/todo');
-var {User} = require('./models/user');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
+
+const {mongoose} = require('./db/mongoose');
+const {Todo} = require('./models/todo');
+const {User} = require('./models/user');
 
 var app = express();
 
@@ -85,6 +87,41 @@ app.delete('/todos/:id', (req, res) => {
     }).catch((e) => {
         // 400 with empty body
         res.status(404).send();
+    });
+});
+
+// PATCH /todos/:id
+app.patch('/todos/:id', (req, res) => {
+    // get id
+    var id = req.params.id;
+
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    // validate id -> if not valid return 404
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    // 如果有completed這個屬性，而且是布林型態
+    if(_.isBoolean(body.completed) && body.completed)
+    {
+        // Unix Epoch timestamp
+        body.completeAt = new Date().getTime();
+
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+
+        res.send({todo});
+
+    }).catch((e) => {
+        res.status(400).send();
     });
 });
 
